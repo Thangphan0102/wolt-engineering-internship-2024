@@ -29,7 +29,7 @@ class FeeCalculator:
     def __init__(self):
         pass
 
-    def calculate_cart_value_surcharge(self, cart_value: int) -> int:
+    def _calculate_cart_value_surcharge(self, cart_value: int) -> int:
         """Calculate cart value surcharge.
 
         If the cart value is less than 1000, the surcharge is the difference between the cart value and 1000. Otherwise, the surcharge is 0.
@@ -46,8 +46,8 @@ class FeeCalculator:
             surcharge += Const.BASE_CART_VALUE - cart_value
         
         return surcharge
-        
-    def calculate_distance_surcharge(self, delivery_distance: int) -> int:
+
+    def _calculate_distance_surcharge(self, delivery_distance: int) -> int:
         """Calculate distance surcharge.
 
         A delivery fee for the first 1000 meters (=1km) is 200. If the delivery distance is longer than that, 100 is added for every additional 500 meters that the courier needs to travel before reaching the destination. Even if the distance would be shorter than 500 meters, the minimum fee is always 100.
@@ -67,7 +67,7 @@ class FeeCalculator:
         
         return surcharge
 
-    def calculate_item_surcharge(self, number_of_items: int) -> int:
+    def _calculate_item_surcharge(self, number_of_items: int) -> int:
         """Calculate item surcharge.
 
         If the number of items is five or more, an additional 50 cent surcharge is added for each item above and including the fifth item. An extra "bulk" fee applies for more than 12 items of 120
@@ -91,8 +91,8 @@ class FeeCalculator:
                 surcharge += Const.BULK_SURCHARGE
         
         return surcharge
-    
-    def limit_delivery_fee(self, delivery_fee: int) -> int:
+
+    def _limit_delivery_fee(self, delivery_fee: int) -> int:
         """Limit the delivery fee.
 
         If the delivery fee exceeds the limit, the function should return limit. Otherwise, the delivery fee should remain unchanged.
@@ -104,8 +104,8 @@ class FeeCalculator:
             int: The delivery fee in cents
         """
         return min(delivery_fee, Const.FEE_LIMIT)
-    
-    def is_free_delivery(self, cart_value: int) -> bool:
+
+    def _is_free_delivery(self, cart_value: int) -> bool:
         """Check if the order is eligible for free delivery
 
         Args:
@@ -118,8 +118,10 @@ class FeeCalculator:
             return True
         return False
 
-    def calculate_rush_hour_surcharge(self, time: datetime.date, delivery_fee: int) -> int:
-        """Multiply the delivery fee by a multiplier if the delivery is during rush hour.
+    def _calculate_rush_hour_surcharge(
+        self, time: datetime.date, delivery_fee: int
+    ) -> int:
+        """Calculate the rush hour surcharge to be added to the delivery fee.
 
         Args:
             time (_type_): Order time in UTC in ISO format
@@ -127,13 +129,14 @@ class FeeCalculator:
         Returns:
             int: The delivery fee in cents
         """
-        
+        surcharge = 0
+
         if time.isoweekday() == Const.RUSH_HOUR_ISOWEEKDAY:
             if Const.RUSH_HOUR_START <= time.time() < Const.RUSH_HOUR_END:
-                return round(delivery_fee * Const.RUSH_HOUR_MULTIPLIER)
-        
-        return delivery_fee
-    
+                surcharge = delivery_fee * Const.RUSH_HOUR_MULTIPLIER - delivery_fee
+
+        return surcharge
+
     def calculate_delivery_fee(self, **inputs) -> int:
         """Calculate the delivery fee.
 
@@ -147,16 +150,16 @@ class FeeCalculator:
         delivery_distance = inputs.get("delivery_distance")
         number_of_items = inputs.get("number_of_items")
         time = inputs.get("time")
-        
-        delivery_fee = cart_value
-        
-        if self.is_free_delivery(cart_value):
+
+        delivery_fee = 0
+
+        if self._is_free_delivery(cart_value):
             return 0
 
-        delivery_fee += self.calculate_cart_value_surcharge(cart_value)
-        delivery_fee += self.calculate_distance_surcharge(delivery_distance)
-        delivery_fee += self.calculate_item_surcharge(number_of_items)
-        delivery_fee = self.calculate_rush_hour_surcharge(time, delivery_fee)
-        delivery_fee = self.limit_delivery_fee(delivery_fee)
-        
+        delivery_fee += self._calculate_cart_value_surcharge(cart_value)
+        delivery_fee += self._calculate_distance_surcharge(delivery_distance)
+        delivery_fee += self._calculate_item_surcharge(number_of_items)
+        delivery_fee += self._calculate_rush_hour_surcharge(time, delivery_fee)
+        delivery_fee = self._limit_delivery_fee(delivery_fee)
+
         return delivery_fee
