@@ -9,21 +9,21 @@ class Const:
     BASE_DISTANCE = 1000
     ADDITIONAL_DISTANCE_SURCHARGE = 100
     ADDITIONAL_DISTANCE = 500
-    
+
     ADDITIONAL_ITEM_LIMIT = 4
     ADDITIONAL_ITEM_SURCHARGE = 50
     BULK_ITEM_LIMIT = 12
     BULK_SURCHARGE = 120
-    
+
     FEE_LIMIT = 1500
-    
+
     CART_VALUE_FOR_FREE_DELIVERY = 20000
-    
-    RUSH_HOUR_ISOWEEKDAY = 5 # Friday
+
+    RUSH_HOUR_ISOWEEKDAY = 5  # Friday
     RUSH_HOUR_START = datetime.time(15, 0, 0)
     RUSH_HOUR_END = datetime.time(19, 0, 0)
     RUSH_HOUR_MULTIPLIER = 1.2
-    
+
 
 class FeeCalculator:
     def __init__(self):
@@ -44,7 +44,7 @@ class FeeCalculator:
         surcharge = 0
         if cart_value < Const.BASE_CART_VALUE:
             surcharge += Const.BASE_CART_VALUE - cart_value
-        
+
         return surcharge
 
     def _calculate_distance_surcharge(self, delivery_distance: int) -> int:
@@ -63,8 +63,14 @@ class FeeCalculator:
         """
         surcharge = Const.BASE_SURCHARGE
         if delivery_distance > Const.BASE_DISTANCE:
-            surcharge += math.ceil((delivery_distance - Const.BASE_DISTANCE) / Const.ADDITIONAL_DISTANCE) * Const.ADDITIONAL_DISTANCE_SURCHARGE
-        
+            surcharge += (
+                math.ceil(
+                    (delivery_distance - Const.BASE_DISTANCE)
+                    / Const.ADDITIONAL_DISTANCE
+                )
+                * Const.ADDITIONAL_DISTANCE_SURCHARGE
+            )
+
         return surcharge
 
     def _calculate_item_surcharge(self, number_of_items: int) -> int:
@@ -84,12 +90,14 @@ class FeeCalculator:
             int: The surcharge in cents
         """
         surcharge = 0
-        
+
         if number_of_items > Const.ADDITIONAL_ITEM_LIMIT:
-            surcharge += (number_of_items - Const.ADDITIONAL_ITEM_LIMIT) * Const.ADDITIONAL_ITEM_SURCHARGE
+            surcharge += (
+                number_of_items - Const.ADDITIONAL_ITEM_LIMIT
+            ) * Const.ADDITIONAL_ITEM_SURCHARGE
             if number_of_items > Const.BULK_ITEM_LIMIT:
                 surcharge += Const.BULK_SURCHARGE
-        
+
         return surcharge
 
     def _limit_delivery_fee(self, delivery_fee: int) -> int:
