@@ -1,5 +1,5 @@
-import math
 import datetime
+import math
 
 
 class Const:
@@ -127,7 +127,7 @@ class FeeCalculator:
         return False
 
     def _calculate_rush_hour_surcharge(
-        self, time: datetime.date, delivery_fee: int
+        self, time: datetime.datetime, delivery_fee: int
     ) -> int:
         """Calculate the rush hour surcharge to be added to the delivery fee.
 
@@ -141,7 +141,9 @@ class FeeCalculator:
 
         if time.isoweekday() == Const.RUSH_HOUR_ISOWEEKDAY:
             if Const.RUSH_HOUR_START <= time.time() < Const.RUSH_HOUR_END:
-                surcharge = delivery_fee * Const.RUSH_HOUR_MULTIPLIER - delivery_fee
+                surcharge = int(
+                    delivery_fee * Const.RUSH_HOUR_MULTIPLIER - delivery_fee
+                )
 
         return surcharge
 
