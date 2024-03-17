@@ -29,4 +29,4 @@ class FeeCalculatorRequest(BaseModel):
 
 class FeeCalculatorResponse(BaseModel):
     delivery_fee: int = Field(ge=0, description="Calculated delivery fee in cents")
-    model_config = {"json_schema_extra": {"examples": [{"delivery_fee": 1500}]}}
+    model_config = {"json_schema_extra": {"examples": [{"delivery_fee": 710}]}}
