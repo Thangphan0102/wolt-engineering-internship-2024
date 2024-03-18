@@ -64,22 +64,35 @@ pytest
 |---------------------------------|------------|----------------------------|
 | ```api/v1/fees/calculate_fee``` | ```POST``` | Calculate the delivery fee |
 
-### ```api/v1```
-#### ```fees```
-##### ```api/v1/fees/calculate_fee```
+### ```/api/v1```
+- #### ```/fees```
+    - ##### ```/calculate_fee```
 
-**Example request:**
+        **Example request:**
 
-```bash
-curl -X "POST" \
-    "http://127.0.0.1:8000/api/v1/fees/calculate_fee" \
-    -H "accept: application/json" \
-    -H "Content-Type: application/json" \
-    -d "{\"cart_value\": 790, \"delivery_distance\": 2235, \"number_of_items\": 4, \"time\": \"2024-01-15T13:00:00Z\"}"
-```
+        Request body:
 
-**Example response:**
+        ```json
+        {
+        "cart_value": 790,
+        "delivery_distance": 2235,
+        "number_of_items": 4,
+        "time": "2024-01-15T13:00:00Z"
+        }
+        ```
 
-```json
-{"delivery_fee": 710}
-```
+        Using curl:
+
+        ```bash
+        curl -X "POST" \
+            "http://127.0.0.1:8000/api/v1/fees/calculate_fee" \
+            -H "accept: application/json" \
+            -H "Content-Type: application/json" \
+            -d "{\"cart_value\": 790, \"delivery_distance\": 2235, \"number_of_items\": 4, \"time\": \"2024-01-15T13:00:00Z\"}"
+        ```
+
+        **Example response:**
+
+        ```json
+        {"delivery_fee": 710}
+        ```
