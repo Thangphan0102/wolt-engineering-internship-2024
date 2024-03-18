@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  api:
+    image: wolt-engineering-internship-2024-api:latest
+    build:
+      dockerfile: deployment/Dockerfile
+    ports:
+      - 8000:8000

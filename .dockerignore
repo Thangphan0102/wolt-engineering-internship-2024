@@ -1,0 +1,9 @@
+.dockerignore
+.DS_Store
+.pytest_cache
+.ruff_cache
+.venv
+.vscode
+.gitignore
+.git
+dev-requirements.txt
